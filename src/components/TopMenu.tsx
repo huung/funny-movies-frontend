@@ -8,6 +8,11 @@ import Button from "@material-ui/core/Button";
 import HomeIcon from "@material-ui/icons/Home";
 
 const useStyles = makeStyles(() => ({
+  topMenu: {
+    borderBottom: "2px solid black",
+    paddingTop: 15,
+    paddingBottom: 15,
+  },
   title: {
     cursor: "pointer",
   },
@@ -40,7 +45,7 @@ export default function TopMenu(): React.ReactElement {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" className={classes.topMenu}>
       <Grid container>
         <Grid
           container
