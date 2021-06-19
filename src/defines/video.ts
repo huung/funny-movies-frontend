@@ -14,8 +14,10 @@ export interface Vote {
 }
 
 export interface VideoData {
-  videoId: string;
+  videoId: any;
+  videoYoutubeId: string;
   title: string;
   sharer: string;
   description: string;
+  votes: Vote[];
 }

@@ -15,10 +15,12 @@ export const convertVideoInfo = (
 
   const videoData = res.items.map((item: any): VideoData => {
     const data = {
-      videoId: item.id,
+      videoId: "",
+      videoYoutubeId: item.id,
       title: item.snippet.title,
       sharer: "",
       description: item.snippet.description,
+      votes: [],
     };
     return data;
   });

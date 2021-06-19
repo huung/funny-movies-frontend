@@ -40,19 +40,19 @@ export default function VideoCard(props: VideoCardProps): React.ReactElement {
   const classes = useStyles();
 
   const {
-    data: { videoId, title, sharer, description },
+    data: { videoId, videoYoutubeId, title, sharer, description, votes },
   } = props;
 
   return (
     <Grid container className={classes.videoCard}>
       <Grid container item xs={6}>
-        <VideoPlayer videoId={videoId} />
+        <VideoPlayer videoId={videoYoutubeId} />
       </Grid>
       <Grid container item xs={6} className={classes.infoSection}>
         <div className={classes.title}>{title}</div>
         <div className={classes.sharer}>Shared by: {sharer}</div>
         <div className={classes.sharer}>
-          <ThumbButtons />
+          <ThumbButtons videoId={videoId} votes={votes} />
         </div>
         <div className={classes.description}>
           Description:{" "}

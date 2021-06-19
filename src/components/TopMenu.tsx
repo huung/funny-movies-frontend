@@ -10,7 +10,10 @@ import { useSnackbar } from "notistack";
 import { useMutation } from "@apollo/client";
 
 import { AuthContext } from "../context/auth";
-import { LOGIN_USER, REGISTER_USER } from "../defines/graphql";
+import {
+  LOGIN_USER_MUTATION,
+  REGISTER_USER_MUTATION,
+} from "../defines/graphql";
 import LoadingOverlay from "../components/LoadingOverlay";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -73,7 +76,7 @@ export default function TopMenu(): React.ReactElement {
   };
 
   const [registerUser, { loading: registerLoading }] = useMutation(
-    REGISTER_USER,
+    REGISTER_USER_MUTATION,
     {
       update(_, result) {
         context.login(result.data.register);
@@ -86,18 +89,21 @@ export default function TopMenu(): React.ReactElement {
     }
   );
 
-  const [loginUser, { loading: loginLoading }] = useMutation(LOGIN_USER, {
-    update(_, result) {
-      context.login(result.data.login);
-      setErrors(null);
-    },
-    onError(err) {
-      const errors = err?.graphQLErrors[0]?.extensions?.errors;
-      if (errors.general === "User not found") registerUser();
-      else setErrors(errors);
-    },
-    variables: values,
-  });
+  const [loginUser, { loading: loginLoading }] = useMutation(
+    LOGIN_USER_MUTATION,
+    {
+      update(_, result) {
+        context.login(result.data.login);
+        setErrors(null);
+      },
+      onError(err) {
+        const errors = err?.graphQLErrors[0]?.extensions?.errors;
+        if (errors.general === "User not found") registerUser();
+        else setErrors(errors);
+      },
+      variables: values,
+    }
+  );
 
   const onSubmit = (event: React.MouseEvent) => {
     loginUser();
@@ -113,6 +119,13 @@ export default function TopMenu(): React.ReactElement {
     _event: React.MouseEvent<HTMLElement, MouseEvent>
   ): void => {
     history.push("/share");
+  };
+
+  const onLogoutClicked = (
+    _event: React.MouseEvent<HTMLElement, MouseEvent>
+  ): void => {
+    history.push("/");
+    context.logout();
   };
 
   useEffect(() => {
@@ -164,7 +177,7 @@ export default function TopMenu(): React.ReactElement {
                   color="secondary"
                   variant="contained"
                   className={classes.button}
-                  onClick={context.logout}
+                  onClick={onLogoutClicked}
                 >
                   Log out
                 </Button>

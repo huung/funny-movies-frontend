@@ -10,7 +10,7 @@ import { useSnackbar } from "notistack";
 
 import { AuthContext } from "../context/auth";
 import { getYoutubeVideoIdFromUrl } from "../utils/youtubeHelper";
-import { FETCH_VIDEOS_QUERY, SHARE_VIDEO } from "../defines/graphql";
+import { FETCH_VIDEOS_QUERY, SHARE_VIDEO_MUTATION } from "../defines/graphql";
 import LoadingOverlay from "../components/LoadingOverlay";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -65,41 +65,44 @@ export default function Share(): React.ReactElement {
     } else shareVideo();
   };
 
-  const [shareVideo, { loading: shareLoading }] = useMutation(SHARE_VIDEO, {
-    variables: { url: url },
-    update(proxy, result) {
-      const data: any = proxy.readQuery({
-        query: FETCH_VIDEOS_QUERY,
-      });
-
-      let updatedData = [...data.getVideos];
-      updatedData = [result.data.shareVideo, ...updatedData];
-      proxy.writeQuery({
-        query: FETCH_VIDEOS_QUERY,
-        data: {
-          ...data,
-          getVideos: {
-            updatedData,
-          },
-        },
-      });
-      setUrl("");
-      history.push("/");
-      enqueueSnackbar("Video shared successfully!", {
-        variant: "success",
-      });
-    },
-    onError(err) {
-      if (err?.graphQLErrors[0]?.message)
-        setError(err.graphQLErrors[0].message);
-      else {
-        console.error("Error: ", err);
-        enqueueSnackbar("Share video failed", {
-          variant: "error",
+  const [shareVideo, { loading: shareLoading }] = useMutation(
+    SHARE_VIDEO_MUTATION,
+    {
+      variables: { url: url },
+      update(proxy, result) {
+        const data: any = proxy.readQuery({
+          query: FETCH_VIDEOS_QUERY,
         });
-      }
-    },
-  });
+
+        let updatedData = [...data.getVideos];
+        updatedData = [result.data.shareVideo, ...updatedData];
+        proxy.writeQuery({
+          query: FETCH_VIDEOS_QUERY,
+          data: {
+            ...data,
+            getVideos: {
+              updatedData,
+            },
+          },
+        });
+        setUrl("");
+        history.push("/");
+        enqueueSnackbar("Video shared successfully!", {
+          variant: "success",
+        });
+      },
+      onError(err) {
+        if (err?.graphQLErrors[0]?.message)
+          setError(err.graphQLErrors[0].message);
+        else {
+          console.error("Error: ", err);
+          enqueueSnackbar("Share video failed", {
+            variant: "error",
+          });
+        }
+      },
+    }
+  );
 
   useEffect(() => {
     if (error) {

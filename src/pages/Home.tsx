@@ -15,7 +15,7 @@ import LoadingOverlay from "../components/LoadingOverlay";
 export default function Home(): React.ReactElement {
   const { loading, data } = useQuery(FETCH_VIDEOS_QUERY);
 
-  let [videosData, setVideosData] = useState<VideoData[] | null>(null);
+  const [videosData, setVideosData] = useState<VideoData[] | null>(null);
 
   const videoIds = useMemo((): string[] => {
     const videos: Video[] = data?.getVideos;
@@ -29,8 +29,10 @@ export default function Home(): React.ReactElement {
     const videos: Video[] = data?.getVideos;
     return videos?.map((video) => {
       const abc = {
-        videoId: getYoutubeVideoIdFromUrl(video.url),
+        videoId: video.id,
+        videoYoutubeId: getYoutubeVideoIdFromUrl(video.url),
         sharer: video.email,
+        votes: video.votes,
       };
       return abc;
     });
@@ -40,6 +42,7 @@ export default function Home(): React.ReactElement {
     if (videoIds) {
       try {
         let res = await getVideosInfo(videoIds);
+        console.log("data", convertVideoInfo(res, videoIdSharerMap));
         setVideosData(convertVideoInfo(res, videoIdSharerMap));
       } catch (err) {
         console.error("Fetching video data error:", err);

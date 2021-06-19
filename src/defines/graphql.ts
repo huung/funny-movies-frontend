@@ -15,7 +15,7 @@ export const FETCH_VIDEOS_QUERY = gql`
   }
 `;
 
-export const LOGIN_USER = gql`
+export const LOGIN_USER_MUTATION = gql`
   mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       id
@@ -25,7 +25,7 @@ export const LOGIN_USER = gql`
   }
 `;
 
-export const REGISTER_USER = gql`
+export const REGISTER_USER_MUTATION = gql`
   mutation register($email: String!, $password: String!) {
     register(
       registerInput: {
@@ -41,12 +41,25 @@ export const REGISTER_USER = gql`
   }
 `;
 
-export const SHARE_VIDEO = gql`
+export const SHARE_VIDEO_MUTATION = gql`
   mutation shareVideo($url: String!) {
     shareVideo(url: $url) {
       id
       url
       email
+      votes {
+        id
+        email
+        status
+      }
+    }
+  }
+`;
+
+export const VOTE_VIDEO_MUTATION = gql`
+  mutation voteVideo($videoId: ID!, $status: String!) {
+    voteVideo(videoId: $videoId, status: $status) {
+      id
       votes {
         id
         email
