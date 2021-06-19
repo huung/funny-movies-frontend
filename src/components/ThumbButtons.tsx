@@ -88,7 +88,7 @@ export default function ThumbButtons(
             break;
         }
       }
-    }
+    } else setButtonStatus("none");
   }, [votes, user]);
 
   useEffect(() => {
