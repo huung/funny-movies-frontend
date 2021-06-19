@@ -48,11 +48,11 @@ export default function ThumbButtons(
 ): React.ReactElement {
   const classes = useStyles();
   const { user } = useContext(AuthContext);
+
   const { videoId, votes } = props;
 
-  console.log("votes", votes);
-
   const [buttonStatus, setButtonStatus] = useState<string>("none");
+  const [isButtonPressed, setIsButtonPressed] = useState<boolean>(false);
 
   const [voteVideo] = useMutation(VOTE_VIDEO_MUTATION, {
     variables: { videoId: videoId, status: buttonStatus },
@@ -69,7 +69,7 @@ export default function ThumbButtons(
       newStatus = buttonStatus === "down" ? "none" : "down";
     }
     setButtonStatus(newStatus);
-    voteVideo();
+    setIsButtonPressed(true)
   };
 
   useEffect(() => {
@@ -91,6 +91,12 @@ export default function ThumbButtons(
     }
   }, [votes, user]);
 
+  useEffect(() => {
+    if (isButtonPressed) {
+      voteVideo()
+    }
+  }, [buttonStatus, voteVideo, isButtonPressed]);
+
   return (
     <div className={classes.buttonsContainer}>
       <IconButton
@@ -102,9 +108,8 @@ export default function ThumbButtons(
         onClick={onThumbButtonClicked}
       >
         <ThumbUpIcon
-          className={`${classes.icon} ${
-            buttonStatus === "up" ? classes.upButton : ""
-          } `}
+          className={`${classes.icon} ${buttonStatus === "up" ? classes.upButton : ""
+            } `}
         />
       </IconButton>
       <div className={classes.space}></div>
@@ -117,9 +122,8 @@ export default function ThumbButtons(
         onClick={onThumbButtonClicked}
       >
         <ThumbDownIcon
-          className={`${classes.icon} ${
-            buttonStatus === "down" ? classes.downButton : ""
-          } `}
+          className={`${classes.icon} ${buttonStatus === "down" ? classes.downButton : ""
+            } `}
         />
       </IconButton>
     </div>
