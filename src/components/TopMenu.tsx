@@ -1,52 +1,143 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import HomeIcon from "@material-ui/icons/Home";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { useSnackbar } from "notistack";
+import { gql, useMutation } from "@apollo/client";
 
-const useStyles = makeStyles(() => ({
-  topMenu: {
-    borderBottom: "2px solid black",
-    paddingTop: 15,
-    paddingBottom: 15,
-    marginBottom: 50,
-  },
-  title: {
-    cursor: "pointer",
-  },
-  titleText: {
-    display: "flex",
-    alignItems: "center",
-    fontSize: 40,
-    marginLeft: 10,
-  },
-  authSection: {
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  marginLeft25: {
-    marginLeft: 25,
-  },
-  loginButton: {
-    padding: "8px 12px",
-  },
-}));
+import { AuthContext } from "../context/auth";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: "#fff",
+    },
+    topMenu: {
+      borderBottom: "2px solid black",
+      paddingTop: 15,
+      paddingBottom: 15,
+      marginBottom: 50,
+    },
+    title: {
+      cursor: "pointer",
+    },
+    titleText: {
+      display: "flex",
+      alignItems: "center",
+      fontSize: 40,
+      marginLeft: 10,
+    },
+    authSection: {
+      alignItems: "center",
+      justifyContent: "flex-end",
+    },
+    marginLeft25: {
+      marginLeft: 25,
+    },
+    button: {
+      padding: "8px 12px",
+    },
+    shareButton: {
+      padding: "8px 24px",
+    },
+    paper: {
+      position: "absolute",
+      width: 400,
+      backgroundColor: theme.palette.background.paper,
+      border: "2px solid #000",
+      boxShadow: theme.shadows[5],
+      padding: theme.spacing(2, 4, 3),
+    },
+  })
+);
+
+type Errors = { [key: string]: string };
 
 export default function TopMenu(): React.ReactElement {
   const classes = useStyles();
   const history = useHistory();
+  const { enqueueSnackbar } = useSnackbar();
+  const context = useContext(AuthContext);
+
+  const [values, setValues] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState<Errors | null>(null);
+
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setValues({ ...values, [event.target.name]: event.target.value });
+  };
+
+  let [registerUser, { loading: registerLoading }] = useMutation(
+    REGISTER_USER,
+    {
+      update(_, result) {
+        context.login(result.data.register);
+        setErrors(null);
+      },
+      onError(err) {
+        setErrors(err?.graphQLErrors[0]?.extensions?.errors);
+      },
+      variables: values,
+    }
+  );
+
+  let [loginUser, { loading: loginLoading }] = useMutation(LOGIN_USER, {
+    update(_, result) {
+      context.login(result.data.login);
+      setErrors(null);
+    },
+    onError(err) {
+      const errors = err?.graphQLErrors[0]?.extensions?.errors;
+      if (errors.general === "User not found") registerUser();
+      else setErrors(errors);
+    },
+    variables: values,
+  });
+
+  const onSubmit = (event: React.MouseEvent) => {
+    event.preventDefault();
+    loginUser();
+  };
 
   const onTitleClicked = (
     _event: React.MouseEvent<HTMLElement, MouseEvent>
   ): void => {
-    history.push("/home");
+    history.push("/");
   };
+
+  const onShareClicked = (
+    _event: React.MouseEvent<HTMLElement, MouseEvent>
+  ): void => {
+    history.push("/share");
+  };
+
+  useEffect(() => {
+    if (errors) {
+      Object.values(errors).forEach((err) => {
+        enqueueSnackbar(err, {
+          variant: "error",
+        });
+      });
+    }
+  }, [errors, enqueueSnackbar]);
 
   return (
     <Container maxWidth="lg" className={classes.topMenu}>
+      <Backdrop
+        className={classes.backdrop}
+        open={loginLoading || registerLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Grid container>
         <Grid
           container
@@ -61,38 +152,99 @@ export default function TopMenu(): React.ReactElement {
           <div className={classes.titleText}>Funny Movies</div>
         </Grid>
         <Grid container item xs={6} className={classes.authSection}>
-          <Grid item xs={3}>
-            <TextField
-              fullWidth
-              label="Email"
-              name="email"
-              size="small"
-              type="email"
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item xs={3} className={classes.marginLeft25}>
-            <TextField
-              fullWidth
-              label="Password"
-              name="password"
-              size="small"
-              type="password"
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item xs={3} className={classes.marginLeft25}>
-            <Button
-              color="primary"
-              type="submit"
-              variant="contained"
-              className={classes.loginButton}
-            >
-              Log in / Register
-            </Button>
-          </Grid>
+          {context.user ? (
+            <>
+              <Grid item xs={6}>
+                <div>Welcome {context.user ? context.user?.email : ""}</div>
+              </Grid>
+              <Grid item xs={2} className={classes.marginLeft25}>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  className={classes.shareButton}
+                  onClick={onShareClicked}
+                >
+                  Share
+                </Button>
+              </Grid>
+              <Grid item xs={2} className={classes.marginLeft25}>
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  className={classes.button}
+                  onClick={context.logout}
+                >
+                  Log out
+                </Button>
+              </Grid>
+            </>
+          ) : (
+            <>
+              <Grid item xs={3}>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  name="email"
+                  size="small"
+                  type="email"
+                  variant="outlined"
+                  value={values.email}
+                  onChange={onChange}
+                />
+              </Grid>
+              <Grid item xs={3} className={classes.marginLeft25}>
+                <TextField
+                  fullWidth
+                  label="Password"
+                  name="password"
+                  size="small"
+                  type="password"
+                  variant="outlined"
+                  value={values.password}
+                  onChange={onChange}
+                />
+              </Grid>
+              <Grid item xs={3} className={classes.marginLeft25}>
+                <Button
+                  color="primary"
+                  type="submit"
+                  variant="contained"
+                  className={classes.button}
+                  onClick={onSubmit}
+                >
+                  Log in / Register
+                </Button>
+              </Grid>
+            </>
+          )}
         </Grid>
       </Grid>
     </Container>
   );
 }
+
+const LOGIN_USER = gql`
+  mutation login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      id
+      email
+      token
+    }
+  }
+`;
+
+const REGISTER_USER = gql`
+  mutation register($email: String!, $password: String!) {
+    register(
+      registerInput: {
+        email: $email
+        password: $password
+        confirmPassword: $password
+      }
+    ) {
+      id
+      email
+      token
+    }
+  }
+`;
