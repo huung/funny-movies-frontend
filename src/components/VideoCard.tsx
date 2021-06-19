@@ -5,6 +5,7 @@ import _ from "lodash";
 
 import { VideoData } from "../defines/video";
 import VideoPlayer from "./VideoPlayer";
+import ThumbButtons from "./ThumbButtons";
 
 const useStyles = makeStyles(() => ({
   videoCard: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles(() => ({
   },
   sharer: {
     fontSize: 14,
-    marginBottom: 25,
+    marginBottom: 5,
   },
   description: {
     fontSize: 14,
@@ -50,6 +51,9 @@ export default function VideoCard(props: VideoCardProps): React.ReactElement {
       <Grid container item xs={6} className={classes.infoSection}>
         <div className={classes.title}>{title}</div>
         <div className={classes.sharer}>Shared by: {sharer}</div>
+        <div className={classes.sharer}>
+          <ThumbButtons />
+        </div>
         <div className={classes.description}>
           Description:{" "}
           <div>
