@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import Container from "@material-ui/core/Container";
 
 import { Video, VideoData } from "../defines/video";
@@ -8,23 +8,8 @@ import {
   getYoutubeVideoIdFromUrl,
   convertVideoInfo,
 } from "../utils/youtubeHelper";
-
+import { FETCH_VIDEOS_QUERY } from "../defines/graphql";
 import VideoList from "../components/VideoList";
-
-const FETCH_VIDEOS_QUERY = gql`
-  {
-    getVideos {
-      id
-      url
-      createdAt
-      email
-      votes {
-        email
-        status
-      }
-    }
-  }
-`;
 
 export default function Home(): React.ReactElement {
   const { loading, data } = useQuery(FETCH_VIDEOS_QUERY);

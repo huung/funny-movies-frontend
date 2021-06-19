@@ -9,9 +9,10 @@ import HomeIcon from "@material-ui/icons/Home";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSnackbar } from "notistack";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 
 import { AuthContext } from "../context/auth";
+import { LOGIN_USER, REGISTER_USER } from "../defines/graphql";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -76,7 +77,7 @@ export default function TopMenu(): React.ReactElement {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
-  let [registerUser, { loading: registerLoading }] = useMutation(
+  const [registerUser, { loading: registerLoading }] = useMutation(
     REGISTER_USER,
     {
       update(_, result) {
@@ -90,7 +91,7 @@ export default function TopMenu(): React.ReactElement {
     }
   );
 
-  let [loginUser, { loading: loginLoading }] = useMutation(LOGIN_USER, {
+  const [loginUser, { loading: loginLoading }] = useMutation(LOGIN_USER, {
     update(_, result) {
       context.login(result.data.login);
       setErrors(null);
@@ -104,7 +105,6 @@ export default function TopMenu(): React.ReactElement {
   });
 
   const onSubmit = (event: React.MouseEvent) => {
-    event.preventDefault();
     loginUser();
   };
 
@@ -155,7 +155,9 @@ export default function TopMenu(): React.ReactElement {
           {context.user ? (
             <>
               <Grid item xs={6}>
-                <div>Welcome {context.user ? context.user?.email : ""}</div>
+                <div>
+                  Welcome <b>{context.user ? context.user?.email : ""}</b>
+                </div>
               </Grid>
               <Grid item xs={2} className={classes.marginLeft25}>
                 <Button
@@ -222,29 +224,3 @@ export default function TopMenu(): React.ReactElement {
     </Container>
   );
 }
-
-const LOGIN_USER = gql`
-  mutation login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      id
-      email
-      token
-    }
-  }
-`;
-
-const REGISTER_USER = gql`
-  mutation register($email: String!, $password: String!) {
-    register(
-      registerInput: {
-        email: $email
-        password: $password
-        confirmPassword: $password
-      }
-    ) {
-      id
-      email
-      token
-    }
-  }
-`;
