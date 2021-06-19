@@ -12,3 +12,10 @@ export interface Vote {
   status: string;
   createdAt: string;
 }
+
+export interface VideoData {
+  videoId: string;
+  title: string;
+  sharer: string;
+  description: string;
+}

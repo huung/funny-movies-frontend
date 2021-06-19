@@ -12,6 +12,7 @@ const useStyles = makeStyles(() => ({
     borderBottom: "2px solid black",
     paddingTop: 15,
     paddingBottom: 15,
+    marginBottom: 50,
   },
   title: {
     cursor: "pointer",
