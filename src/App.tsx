@@ -5,6 +5,7 @@ import { SnackbarProvider } from "notistack";
 import "./App.css";
 
 import { AuthProvider } from "./context/auth";
+import AuthRoute from "./utils/authRoute";
 import TopMenu from "./components/TopMenu";
 import Home from "./pages/Home";
 import Share from "./pages/Share";
@@ -23,7 +24,7 @@ function App() {
           <TopMenu />
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route exact path="/share" component={Share} />
+            <AuthRoute exact path="/share" component={Share} />
           </Switch>
         </SnackbarProvider>
       </Router>
