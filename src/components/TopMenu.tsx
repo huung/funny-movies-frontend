@@ -6,20 +6,15 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import HomeIcon from "@material-ui/icons/Home";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { useSnackbar } from "notistack";
 import { useMutation } from "@apollo/client";
 
 import { AuthContext } from "../context/auth";
 import { LOGIN_USER, REGISTER_USER } from "../defines/graphql";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: "#fff",
-    },
     topMenu: {
       borderBottom: "2px solid black",
       paddingTop: 15,
@@ -132,12 +127,7 @@ export default function TopMenu(): React.ReactElement {
 
   return (
     <Container maxWidth="lg" className={classes.topMenu}>
-      <Backdrop
-        className={classes.backdrop}
-        open={loginLoading || registerLoading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <LoadingOverlay show={loginLoading || registerLoading} />
       <Grid container>
         <Grid
           container

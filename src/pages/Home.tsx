@@ -10,6 +10,7 @@ import {
 } from "../utils/youtubeHelper";
 import { FETCH_VIDEOS_QUERY } from "../defines/graphql";
 import VideoList from "../components/VideoList";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 export default function Home(): React.ReactElement {
   const { loading, data } = useQuery(FETCH_VIDEOS_QUERY);
@@ -53,8 +54,11 @@ export default function Home(): React.ReactElement {
 
   return (
     <Container maxWidth="lg">
-      {loading ? <h1>Loading... Please wait...</h1> : <></>}
-      <VideoList videosData={videosData} />
+      {loading || videosData === null ? (
+        <LoadingOverlay show={true} />
+      ) : (
+        <VideoList videosData={videosData} />
+      )}
     </Container>
   );
 }
