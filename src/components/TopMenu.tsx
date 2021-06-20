@@ -149,7 +149,7 @@ export default function TopMenu(): React.ReactElement {
           className={classes.title}
           onClick={onTitleClicked}
         >
-          <div>
+          <div id="home-icon">
             <HomeIcon style={{ fontSize: 80 }} />
           </div>
           <div className={classes.titleText}>Funny Movies</div>
@@ -164,6 +164,7 @@ export default function TopMenu(): React.ReactElement {
               </Grid>
               <Grid item xs={2} className={classes.marginLeft25}>
                 <Button
+                  id="share"
                   color="primary"
                   variant="contained"
                   className={classes.shareButton}
@@ -174,6 +175,7 @@ export default function TopMenu(): React.ReactElement {
               </Grid>
               <Grid item xs={2} className={classes.marginLeft25}>
                 <Button
+                  id="logout"
                   color="secondary"
                   variant="contained"
                   className={classes.button}
@@ -188,6 +190,7 @@ export default function TopMenu(): React.ReactElement {
               <Grid item xs={3}>
                 <TextField
                   fullWidth
+                  id="email-input"
                   label="Email"
                   name="email"
                   size="small"
@@ -211,6 +214,7 @@ export default function TopMenu(): React.ReactElement {
               </Grid>
               <Grid item xs={3} className={classes.marginLeft25}>
                 <Button
+                  id="submit"
                   color="primary"
                   type="submit"
                   variant="contained"
