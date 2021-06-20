@@ -69,13 +69,14 @@ export default function ThumbButtons(
       newStatus = buttonStatus === "down" ? "none" : "down";
     }
     setButtonStatus(newStatus);
-    setIsButtonPressed(true)
+    setIsButtonPressed(true);
   };
 
   useEffect(() => {
     if (user && votes) {
       const foundVote = votes.find((vote) => vote.email === user.email);
       if (foundVote) {
+        setIsButtonPressed(false);
         const voteStatus = foundVote.status;
         switch (voteStatus) {
           case "up":
@@ -93,7 +94,7 @@ export default function ThumbButtons(
 
   useEffect(() => {
     if (isButtonPressed) {
-      voteVideo()
+      voteVideo();
     }
   }, [buttonStatus, voteVideo, isButtonPressed]);
 
@@ -108,8 +109,9 @@ export default function ThumbButtons(
         onClick={onThumbButtonClicked}
       >
         <ThumbUpIcon
-          className={`${classes.icon} ${buttonStatus === "up" ? classes.upButton : ""
-            } `}
+          className={`${classes.icon} ${
+            buttonStatus === "up" ? classes.upButton : ""
+          } `}
         />
       </IconButton>
       <div className={classes.space}></div>
@@ -122,8 +124,9 @@ export default function ThumbButtons(
         onClick={onThumbButtonClicked}
       >
         <ThumbDownIcon
-          className={`${classes.icon} ${buttonStatus === "down" ? classes.downButton : ""
-            } `}
+          className={`${classes.icon} ${
+            buttonStatus === "down" ? classes.downButton : ""
+          } `}
         />
       </IconButton>
     </div>
